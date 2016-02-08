@@ -2,6 +2,7 @@
 //primary key on ptprofile, foreign key on accdetails
 //	Patient Options
 // Options, and include a file with a function for the opening screen etc (whether to book appt or whats next etc)
+// +book appt include
 echo '<a href="index.php?content=companyList">
 			<span class="mainMenuItem">List Companies</span>
 			</a>';
