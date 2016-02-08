@@ -1,5 +1,5 @@
 <?php
-
+//idea, aman wants pt. to use in house ipads, then they can register/login, and declare arrival if can be done???
 	// file: index.php (root/www)
 	// secure connection to mysql db script.
 	// connection details kept outside of system root, so it cannot be accessed externally
