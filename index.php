@@ -1,56 +1,74 @@
 <?php
+//ask to go through code see why includes dont show. if statements? {? headers?
+   // secure connection to mysql db script.
+    // connection details kept outside of system root, so it cannot be accessed externally
+    include('../sqlconfig/dbconfig.php');
+    $mysqli = new mysqli($dbdetail['hostname'], $dbdetail['username'], $dbdetail['password'], $dbdetail['database']);
+    $link = mysqli_connect($dbdetail['hostname'], $dbdetail['username'], $dbdetail['password'], $dbdetail['database']);
+        if ($mysqli->connect_errno) {
+            echo "Failed to connect to MySQL: " . $mysqli->connect_error;
+            }
+        // if program fails to connect to mysql, report error, else continue (to 12)
+        else {
+            include_once('includes/fn_authorise.php');
+            // include_once('includes/fn_strings.php'); wip
+            // include_once('includes/fn_formatting.php'); wip
 
-	// file: index.php (root/www)
-	// secure connection to mysql db script.
-	// connection details kept outside of system root, so it cannot be accessed externally
-		include('../sqlconfig/dbconfig.php');
-		$mysqli = new mysqli($dbdetail['hostname'], $dbdetail['username'], $dbdetail['password'], $dbdetail['database']);
-		if ($mysqli->connect_errno) {
-			echo "Failed to connect to MySQL: " . $mysqli->connect_error;
-		}
-		else
+            $menuFile = '';
+            $contentFile = '';
+            $contentMsg = '';
 
-			$menuFile = '';
-			$contentFile = '';
-			$contentMsg = '';
-// connect to MYSQL /w info in external file
-// if mysql has a error, return it else if mysql has connected successfully, designate files as blank
-    $loginAuthorised = ($_COOKIE["loginAuthorised"] == "loginAuthorised");
-
-        if ($loginAuthorised){
-            $menuFile = 'includes/tp_crmMenu.php'; //sub-page that determines what options are shown based on acctype
-        } else {
-            $contentFile = 'includes/tp_loginForm.php'; //sets variable to redirect to login form
-
+            $loginAuthorised = ($_COOKIE["loginAuthorised"] == "loginAuthorised");
         }
+            if (!$loginAuthorised) {
+                // if there isn't a stored logged in username/pass, post a user/pass otherwise continue (to 34)
+                $username = $_POST['username'];
+                $password = $_POST['password'];
+                    if (userAuthorised($username, $password, $link)) {
+                        // if user is authorised after posting user/pass, refresh page (back to 1)
+                        header("Location: index.php");
+                    } else {
+                            $contentFile = 'includes/tp_loginform.php'; //if user is NOT authorised after posting user/pass, direct to login form
+                            echo "hello world line 32";
+                        }
+                    }
+            else {
+                $accType = $_COOKIE["accType"];
+                $userID = $_COOKIE["userID"];
 
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    if (userAuthorised($username, $password)) {
-        header("Location: index.php");
-    } else {
+                $status = $_GET['status'];
+            }
+                    if (isset($status) AND ($status == "logout")) {
+                    //if login status is set, and set to logout, delete auth cookie and refresh otherwise continue (to 44)
+                        setcookie("loginAuthorised", "", time()-7200);
+                        header("Location: index.php");
+                            } else {
 
-        $contentFile = 'includes/tp_loginForm.php';
-    }
-    include_once('includes/fn_authorise.php');
-    $accessLevel = $_COOKIE["accessLevel"];
-    $userID = $_COOKIE["userID"];
+                        echo "hello world";
 
-    $status = $_GET['status'];
-    if (isset($status) AND ($status == "logout")) {
-        setcookie("loginAuthorised", "", time()-7200);
-        header("Location: index.php");
-    } else {
+                           /* $menuFile = 'includes/tp_crmMenu.php'; //sub-page that determines what options are shown based on acctype
+                            $contentCode = $_GET['content'];
 
-        //		This is where we manage CONTENT for LOGGED-IN users
-        $menuFile = 'includes/tp_crmMenu.php';
-
-        $contentCode = $_GET['content'];
-
-        //  DO SOMETHING depending on the $contentCode.   eg
-
-        $contentMsg = $contentCode;
-
+                            switch ($contentCode) {
+                                case "companyList":
+                                    $contentFile = "includes/tp_companyList.php";
+                                    break;
+                                case "insertCompany":
+                                    $contentFile = "includes/tp_companyInsert.php";
+                                    break;
+                                case "editCompany":
+                                    $contentFile = "includes/tp_companyEditForm.php";
+                                    break;
+                                case "insertUser":
+                                    $contentFile = "includes/tp_userInsert.php";
+                                    break;
+                                case "companyPeopleEdit":
+                                    $contentFile = "includes/tp_companyPeopleEdit.php";
+                                    break;
+                                case "personEditForm":
+                                    $contentFile = "includes/tp_personEditForm.php";
+                                    break;
+                            }*/
 }
 
 ?>
@@ -64,13 +82,6 @@
 </head>
 <body>
 
-
-
-
-
-<?php
-// can contain most php code - except header()function
-?>
 
 
 </body>

@@ -1,29 +1,30 @@
 <?php
+//sheet containing authorisation function for login on index.php as well as function for login logs
+function userAuthorised($username, $password, $link) {
+    $tUser_SQLselect = "SELECT ID, hashPassword, accType FROM accdetails ";
+    $tUser_SQLselect .= "WHERE username = '" . $username . "' ";
 
-function userAuthorised($username, $password) {
+    $tUser_SQLselect_Query = mysqli_query($link, $tUser_SQLselect); //$link designated in index.php //sql query pulling stored info
 
-    $md5Password = md5($password);
-    $tUser_SQLselect = "SELECT ID, password, accessLevel FROM tUser ";
-    $tUser_SQLselect .= "WHERE username = '".$username."' ";
+        while ($row = mysqli_fetch_array($tUser_SQLselect_Query, MYSQLI_ASSOC)) {
+            $ID = $row['ID'];
+            $hashPasswordRetrieved = $row['hashPassword'];
+            $accType = $row['accType'];
+        }
+            if (!empty($hashPasswordRetrieved) AND (password_verify($password, $hashPasswordRetrieved))) { //(any errors??)
 
-    $tUser_SQLselect_Query = mysqli_query($tUser_SQLselect);
-    while ($row = mysqli_fetch_array($tUser_SQLselect_Query, MYSQLI_ASSOC)) {
-        $userID = $row['ID'];
-        $passwordRetrieved = $row['password'];
-        $accessLevel = $row['accessLevel'];
-    }
+                setcookie("accType", $accType, time() + 7200, "/");
+                setcookie("ID", $ID, time() + 7200, "/");
+                setcookie("loginAuthorised", "loginAuthorised", time() + 7200, "/");
 
-    mysqli_free_result($tUser_SQLselect_Query);
+                $returnCode = true;
+            } else {
+                $returnCode = false;
+            }
+}
 
-    if (!empty($passwordRetrieved) AND ($md5Password == $passwordRetrieved)) {
 
-        setcookie("accessLevel", $accessLevel, time()+7200, "/");
-        setcookie("userID", $userID, time()+7200, "/");
-        setcookie("loginAuthorised", "loginAuthorised", time()+7200, "/");
-
-        $returnCode = true;
-
-        $sessionLogged = insertLogin($userID);
+/*       $sessionLogged = insertLogin($ID);
         if (!$sessionLogged) {
             setcookie("sessionLogging", "failed", time()+300, "/");
         }
@@ -32,34 +33,26 @@ function userAuthorised($username, $password) {
     }
 
     return $returnCode;
-}
+}*/
 
-
-function insertLogin($userID) {
+/*
+function insertLogin($ID) { //function to record logged in user's ID/Time logged in/IP for debugging (maintenance etc)
     $success = false;
-    //	Get current date-time in MySQL format
-    $nowTimeStamp = date("Y-m-d H:i:s");
-    //	Get user's IP address
-    $userIP = $_SERVER['REMOTE_ADDR'];
+    $nowTimeStamp = date("Y-m-d H:i:s");   //	Gets current date-time in MYSQL format
+    $userIP = $_SERVER['REMOTE_ADDR']; //	Gets user's IP address
+    $insertLogin_SQL = 'INSERT INTO AccessLog (ID, timeLogin, IPaddress)
+									VALUES ('$ID', "'$nowTimeStamp'", "'$userIP'")';
 
-    $insertLogin_SQL = 'INSERT INTO tAccessLog (
-										userID,
-										timeLogin,
-										IPaddress
-									) VALUES (
-										'.$userID.',
-										"'.$nowTimeStamp.'",
-										"'.$userIP.'"
-									)';
+    mysqli_free_result($insertLogin_SQL);
 
-    if (mysqli_query($insertLogin_SQL))  {
+    if (mysqli_query($link, $insertLogin_SQL)) {
         $success = true;
     } else {
-        $success = $insertLogin_SQL."<br />".mysqli_error();
+        $success = $insertLogin_SQL."<br />".mysqli_error($link);
     }
 
     return $success;
-}
+}*/
 
 
 
