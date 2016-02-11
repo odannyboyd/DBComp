@@ -29,6 +29,7 @@
                         header("Location: index.php");
                     } else {
                             $contentFile = 'includes/tp_loginform.php'; //if user is NOT authorised after posting user/pass, direct to login form
+                            include($contentFile) //addition in computing, fix?
                             echo "hello world line 32";
                         }
                     }
@@ -53,21 +54,7 @@
                                 case "companyList":
                                     $contentFile = "includes/tp_companyList.php";
                                     break;
-                                case "insertCompany":
-                                    $contentFile = "includes/tp_companyInsert.php";
-                                    break;
-                                case "editCompany":
-                                    $contentFile = "includes/tp_companyEditForm.php";
-                                    break;
-                                case "insertUser":
-                                    $contentFile = "includes/tp_userInsert.php";
-                                    break;
-                                case "companyPeopleEdit":
-                                    $contentFile = "includes/tp_companyPeopleEdit.php";
-                                    break;
-                                case "personEditForm":
-                                    $contentFile = "includes/tp_personEditForm.php";
-                                    break;
+                          
                             }*/
 }
 
