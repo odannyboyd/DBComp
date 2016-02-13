@@ -29,8 +29,7 @@
                         header("Location: index.php");
                     } else {
                             $contentFile = 'includes/tp_loginform.php'; //if user is NOT authorised after posting user/pass, direct to login form
-                            include($contentFile) //addition in computing, fix?
-                            echo "hello world line 32";
+                            include($contentFile); // manipulate later
                         }
                     }
             else {
